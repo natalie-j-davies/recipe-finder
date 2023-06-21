@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Recipe Finder</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    #header {
+      background-color: #49c6e1;
+      color: white;
+      padding: 15px;
+      text-align: center;
+    }
+    #searchForm {
+      display: flex;
+      justify-content: center;
+      padding-top: 25px;
+      width: 75%;
+      margin: auto;
+    }
+    #searchForm input[type="text"] {
+      width: 70%;
+      padding: 12px 20px;
+      margin-right: 10px;
+      box-sizing: border-box;
+      border: 2px solid #ccc;
+      border-radius: 4px;
+    }
+    #searchForm button[type="submit"] {
+      width: 30%;
+      background-color: #49c6e1;
+      color: white;
+      padding: 14px 20px;
+      margin-left: 10px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    #searchForm button[type="submit"]:hover {
+      background-color: white;
+      color: #333;
+    }
+    #recipeContainer {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .recipe {
+      width: calc(33.33% - 20px);
+      margin: 10px;
+      text-align: center;
+    }
+    .recipe img {
+      width: 80%;
+    }
+    
+  </style>
+</head>
+<body>
+  <div id="header">
+    <h1>Recipe Finder</h1>
+  </div>
+
+  <form id="searchForm">
+    <input type="text" id="searchQuery" placeholder="Enter your search query">
+    <button type="submit">Search</button>
+  </form>
+
+  <div id="recipeContainer"></div>
+
+  <script>
+    document.getElementById('searchForm').addEventListener('submit', function(event) {
+      event.preventDefault();
+
+      const searchQuery = document.getElementById('searchQuery').value;
+
+      // Fetch data from the server-side proxy using the user's search query
+      fetch(`/recipe-finder/proxy.php?searchQuery=${searchQuery}`)
+        .then(response => response.json())
+        .then(data => {
+          const recipes = data.hits;
+
+          // Clear the recipe container before displaying new results
+          document.getElementById('recipeContainer').innerHTML = '';
+
+          // Loop through the recipes and display them on the page
+          recipes.forEach(recipe => {
+            const recipeDiv = document.createElement('div');
+            recipeDiv.className = 'recipe';
+            const recipeImage = document.createElement('img');
+            const recipeName = document.createElement('h3');
+
+            recipeName.textContent = recipe.recipe.label;
+            recipeImage.src = recipe.recipe.image;
+
+            recipeDiv.appendChild(recipeImage);
+            recipeDiv.appendChild(recipeName);
+
+
+            document.getElementById('recipeContainer').appendChild(recipeDiv);
+          });
+        })
+        .catch(error => console.log(error));
+    });
+  </script>
+</body>
+</html>
